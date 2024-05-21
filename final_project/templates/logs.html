@@ -1,0 +1,75 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container">
+    <h2 class="mb-4">Logs</h2>
+    <div class="search-bar">
+        <input type="text" class="form-control" id="searchInput" placeholder="Search logs">
+        <select class="custom-select" id="filterSelect">
+            <option value="" disabled selected>Filter: None Selected</option>
+            <option value="API Operation">API Operation</option>
+            <option value="Success Exchange">Success Exchange</option>
+        </select>
+        <input type="date" class="form-control" id="dateFilter">
+        <button class="btn btn-primary" onclick="searchLogs()">Filter</button>
+    </div>
+    <div class="table-container">
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th scope="col">Type</th>
+                    <th scope="col">Description</th>
+                    <th scope="col">Date</th>
+                </tr>
+            </thead>
+            <tbody id="logsTableBody">
+                <!-- Log entries will be dynamically inserted here -->
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<script>
+    const logs = [
+        { type: 'API Operation', description: 'Update a log stream', date: '2023-12-01' },
+        { type: 'Success Exchange', description: 'Client Credentials', date: '2023-11-30' },
+        // Add more log entries here...
+    ];
+
+    function searchLogs() {
+        const searchInput = document.getElementById('searchInput').value.toLowerCase();
+        const filterSelect = document.getElementById('filterSelect').value;
+        const dateFilter = document.getElementById('dateFilter').value;
+        
+        const filteredLogs = logs.filter(log => {
+            return (
+                (!searchInput || log.description.toLowerCase().includes(searchInput) || log.type.toLowerCase().includes(searchInput)) &&
+                (!filterSelect || log.type === filterSelect) &&
+                (!dateFilter || log.date === dateFilter)
+            );
+        });
+
+        renderLogs(filteredLogs);
+    }
+
+    function renderLogs(logs) {
+        const logsTableBody = document.getElementById('logsTableBody');
+        logsTableBody.innerHTML = '';
+
+        logs.forEach(log => {
+            const row = document.createElement('tr');
+            row.innerHTML = `
+                <td>${log.type}</td>
+                <td>${log.description}</td>
+                <td>${log.date}</td>
+            `;
+            logsTableBody.appendChild(row);
+        });
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+        renderLogs(logs);
+    });
+</script>
+
+{% endblock %}
